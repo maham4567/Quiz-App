@@ -3,280 +3,322 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fun General Knowledge Quiz</title>
+    <title>Modern Quiz Experience</title>
     <style>
-        /* CSS STYLES */
+        /* --- MODERN CSS STYLES --- */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #00dbde 0%, #fc00ff 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --card-bg: #1e1e2e;
+            --text-main: #ffffff;
+            --text-dim: #b0b0b0;
+            --accent: #00d2ff;
+            --correct: #00b894;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            padding: 20px;
+            /* Deep, modern gradient background */
+            background: radial-gradient(circle at top left, #1e1e2e, #11111d);
+            color: var(--text-main);
+            overflow: hidden;
         }
 
-        .quiz-container {
-            background-color: white;
-            width: 100%;
-            max-width: 500px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            text-align: center;
+        /* Animated background blobs for a modern feel */
+        .blob {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--primary-gradient);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.4;
+            animation: move 20s infinite alternate;
         }
 
-        .hide {
-            display: none;
+        @keyframes move {
+            from { transform: translate(-50%, -50%); }
+            to { transform: translate(50%, 50%); }
         }
 
-        .quiz-header {
-            margin-bottom: 20px;
-            font-size: 0.9rem;
+        .quiz-card {
+            background-color: var(--card-bg);
+            width: 95%;
+            max-width: 550px;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Progress Bar Section */
+        .progress-container {
+            margin-bottom: 30px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #777;
-            font-weight: bold;
+        }
+
+        .progress-bar-outer {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            width: 0%;
+            background: var(--secondary-gradient);
+            transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         h2 {
-            margin-bottom: 25px;
-            color: #2c3e50;
+            font-size: 1.6rem;
+            margin-bottom: 30px;
             line-height: 1.4;
+            font-weight: 700;
         }
 
-        .btn-grid {
+        /* Answer Buttons */
+        .answer-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 15px;
             margin-bottom: 30px;
         }
 
-        .btn {
-            background-color: #ffffff;
-            border: 2px solid #dfe6e9;
-            border-radius: 10px;
-            padding: 15px;
-            font-size: 16px;
+        .answer-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 20px;
+            border-radius: 14px;
+            color: var(--text-main);
+            font-size: 1rem;
+            text-align: left;
             cursor: pointer;
             transition: all 0.2s ease;
-            color: #2c3e50;
-            font-weight: 500;
+            display: flex;
+            align-items: center;
         }
 
-        .btn:hover {
-            background-color: #f8f9fa;
-            border-color: #b2bec3;
+        .answer-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent);
+            transform: translateY(-2px);
         }
 
-        /* State for the selected answer */
-        .btn.selected {
-            background-color: #0984e3;
+        .answer-btn.selected {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Next/Restart Buttons */
+        .action-btn {
+            width: 100%;
+            padding: 18px;
+            border-radius: 14px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
             color: white;
-            border-color: #0984e3;
+            background: var(--secondary-gradient);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-btn:hover {
+            opacity: 0.9;
             transform: scale(1.02);
         }
 
-        .controls {
-            display: flex;
-            justify-content: center;
+        .hide { display: none; }
+
+        /* Final Screen Styles */
+        .result-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
         }
 
-        .next-button, .restart-button {
-            background-color: #00b894;
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 18px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.2s;
-            width: 100%;
+        .final-score {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 10px 0;
+            background: var(--secondary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .next-button:hover, .restart-button:hover {
-            background-color: #00947a;
-        }
-
-        #score-text {
-            font-size: 24px;
-            margin-bottom: 30px;
-            color: #0984e3;
-            font-weight: bold;
-        }
-
-        /* Responsive adjustment */
+        /* Mobile Responsive */
         @media (max-width: 480px) {
-            .quiz-container {
-                padding: 20px;
-            }
-            h2 {
-                font-size: 1.2rem;
-            }
+            .quiz-card { padding: 25px; }
+            h2 { font-size: 1.3rem; }
+            .action-btn { padding: 15px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Quiz Screen -->
-    <div class="quiz-container" id="quiz">
-        <div class="quiz-header">
-            <span id="progress">Question 1 of 10</span>
-        </div>
+    <div class="blob"></div>
 
-        <div id="question-container">
-            <h2 id="question-text">Question loading...</h2>
-            <div id="answer-buttons" class="btn-grid">
-                <!-- Answer buttons will appear here -->
+    <!-- MAIN QUIZ CARD -->
+    <div class="quiz-card" id="quiz-container">
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>General Knowledge</span>
+                <span id="progress-text">Question 1/10</span>
+            </div>
+            <div class="progress-bar-outer">
+                <div class="progress-bar-inner" id="progress-bar"></div>
             </div>
         </div>
 
-        <div class="controls">
-            <button id="next-btn" class="next-button">Next Question</button>
+        <h2 id="question-text">Loading question...</h2>
+
+        <div id="answer-grid" class="answer-grid">
+            <!-- JS generates buttons here -->
         </div>
+
+        <button id="next-btn" class="action-btn">Next Question</button>
     </div>
 
-    <!-- Result Screen -->
-    <div id="result-container" class="quiz-container hide">
-        <h2>Quiz Completed! 🎉</h2>
-        <p id="score-text">You scored 0 out of 10.</p>
-        <button id="restart-btn" class="restart-button">Play Again</button>
+    <!-- RESULT CARD -->
+    <div class="quiz-card hide" id="result-container">
+        <span class="result-icon">🏆</span>
+        <h2>Quiz Completed!</h2>
+        <p style="color: var(--text-dim);">Your Final Score:</p>
+        <div class="final-score" id="score-display">0/10</div>
+        <p id="feedback-text" style="margin-bottom: 30px;"></p>
+        <button id="restart-btn" class="action-btn">Try Again</button>
     </div>
 
     <script>
-        // JAVASCRIPT LOGIC
         const questions = [
-            {
-                question: "Which planet is known as the 'Red Planet'?",
-                answers: ["Venus", "Mars", "Jupiter", "Saturn"],
-                correct: "Mars"
-            },
-            {
-                question: "What is the capital of France?",
-                answers: ["London", "Berlin", "Madrid", "Paris"],
-                correct: "Paris"
-            },
-            {
-                question: "Which animal is known as the 'King of the Jungle'?",
-                answers: ["Tiger", "Elephant", "Lion", "Giraffe"],
-                correct: "Lion"
-            },
-            {
-                question: "What is the largest mammal in the world?",
-                answers: ["African Elephant", "Blue Whale", "Great White Shark", "Giraffe"],
-                correct: "Blue Whale"
-            },
-            {
-                question: "How many continents are there on Earth?",
-                answers: ["5", "6", "7", "8"],
-                correct: "7"
-            },
-            {
-                question: "Which fruit is said to keep the doctor away if eaten once a day?",
-                answers: ["Banana", "Apple", "Orange", "Strawberry"],
-                correct: "Apple"
-            },
-            {
-                question: "What color are emeralds?",
-                answers: ["Blue", "Red", "Yellow", "Green"],
-                correct: "Green"
-            },
-            {
-                question: "Which is the tallest mountain in the world?",
-                answers: ["K2", "Mount Everest", "Kilimanjaro", "Mount Fuji"],
-                correct: "Mount Everest"
-            },
-            {
-                question: "What is the name of the gas we breathe to survive?",
-                answers: ["Nitrogen", "Carbon Dioxide", "Oxygen", "Helium"],
-                correct: "Oxygen"
-            },
-            {
-                question: "Who painted the Mona Lisa?",
-                answers: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Claude Monet"],
-                correct: "Leonardo da Vinci"
-            }
+            { question: "Which planet is known as the 'Red Planet'?", answers: ["Venus", "Mars", "Jupiter", "Saturn"], correct: "Mars" },
+            { question: "What is the capital of France?", answers: ["London", "Berlin", "Madrid", "Paris"], correct: "Paris" },
+            { question: "Which animal is known as the 'King of the Jungle'?", answers: ["Tiger", "Elephant", "Lion", "Giraffe"], correct: "Lion" },
+            { question: "What is the largest mammal in the world?", answers: ["African Elephant", "Blue Whale", "Great White Shark", "Giraffe"], correct: "Blue Whale" },
+            { question: "How many continents are there on Earth?", answers: ["5", "6", "7", "8"], correct: "7" },
+            { question: "Which fruit is said to keep the doctor away if eaten once a day?", answers: ["Banana", "Apple", "Orange", "Strawberry"], correct: "Apple" },
+            { question: "What color are emeralds?", answers: ["Blue", "Red", "Yellow", "Green"], correct: "Green" },
+            { question: "Which is the tallest mountain in the world?", answers: ["K2", "Mount Everest", "Kilimanjaro", "Mount Fuji"], correct: "Mount Everest" },
+            { question: "What is the name of the gas we breathe to survive?", answers: ["Nitrogen", "Carbon Dioxide", "Oxygen", "Helium"], correct: "Oxygen" },
+            { question: "Who painted the Mona Lisa?", answers: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Claude Monet"], correct: "Leonardo da Vinci" }
         ];
 
-        let currentQuestionIndex = 0;
+        let currentIndex = 0;
         let score = 0;
-        let selectedAnswer = null;
+        let selectedOption = null;
 
-        const questionText = document.getElementById("question-text");
-        const answerButtonsElement = document.getElementById("answer-buttons");
-        const nextButton = document.getElementById("next-btn");
-        const progressText = document.getElementById("progress");
-        const quizScreen = document.getElementById("quiz");
-        const resultScreen = document.getElementById("result-container");
-        const scoreText = document.getElementById("score-text");
-        const restartButton = document.getElementById("restart-btn");
+        const questionEl = document.getElementById("question-text");
+        const answerGrid = document.getElementById("answer-grid");
+        const nextBtn = document.getElementById("next-btn");
+        const progressBar = document.getElementById("progress-bar");
+        const progressText = document.getElementById("progress-text");
+        const quizContainer = document.getElementById("quiz-container");
+        const resultContainer = document.getElementById("result-container");
+        const scoreDisplay = document.getElementById("score-display");
+        const restartBtn = document.getElementById("restart-btn");
+        const feedbackText = document.getElementById("feedback-text");
 
-        function startQuiz() {
-            currentQuestionIndex = 0;
+        function initQuiz() {
+            currentIndex = 0;
             score = 0;
-            resultScreen.classList.add("hide");
-            quizScreen.classList.remove("hide");
-            showQuestion();
+            quizContainer.classList.remove("hide");
+            resultContainer.classList.add("hide");
+            loadQuestion();
         }
 
-        function showQuestion() {
-            selectedAnswer = null; 
-            const currentQuestion = questions[currentQuestionIndex];
+        function loadQuestion() {
+            selectedOption = null;
+            const current = questions[currentIndex];
             
-            progressText.innerText = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
-            questionText.innerText = currentQuestion.question;
-            answerButtonsElement.innerHTML = "";
+            // Update Progress UI
+            const progPercent = ((currentIndex) / questions.length) * 100;
+            progressBar.style.width = `${progPercent}%`;
+            progressText.innerText = `Question ${currentIndex + 1}/${questions.length}`;
+            
+            questionEl.innerText = current.question;
+            answerGrid.innerHTML = "";
 
-            currentQuestion.answers.forEach(answer => {
-                const button = document.createElement("button");
-                button.innerText = answer;
-                button.classList.add("btn");
-                button.addEventListener("click", () => selectAnswer(button, answer));
-                answerButtonsElement.appendChild(button);
+            current.answers.forEach(ans => {
+                const btn = document.createElement("button");
+                btn.innerText = ans;
+                btn.classList.add("answer-btn");
+                btn.onclick = () => selectAnswer(btn, ans);
+                answerGrid.appendChild(btn);
             });
         }
 
-        function selectAnswer(button, answer) {
-            // Remove selection from all buttons
-            const buttons = document.querySelectorAll(".btn");
-            buttons.forEach(btn => btn.classList.remove("selected"));
-            
-            // Add selection to clicked button
-            button.classList.add("selected");
-            selectedAnswer = answer;
+        function selectAnswer(btn, ans) {
+            const allBtns = document.querySelectorAll(".answer-btn");
+            allBtns.forEach(b => b.classList.remove("selected"));
+            btn.classList.add("selected");
+            selectedOption = ans;
         }
 
-        nextButton.addEventListener("click", () => {
-            if (selectedAnswer === null) {
-                alert("Please select an answer first!");
+        nextBtn.onclick = () => {
+            if (!selectedOption) {
+                alert("Please select an option to continue!");
                 return;
             }
 
-            if (selectedAnswer === questions[currentQuestionIndex].correct) {
+            if (selectedOption === questions[currentIndex].correct) {
                 score++;
             }
 
-            currentQuestionIndex++;
+            currentIndex++;
 
-            if (currentQuestionIndex < questions.length) {
-                showQuestion();
+            if (currentIndex < questions.length) {
+                loadQuestion();
             } else {
                 showResults();
             }
-        });
+        };
 
         function showResults() {
-            quizScreen.classList.add("hide");
-            resultScreen.classList.remove("hide");
-            scoreText.innerText = `You scored ${score} out of ${questions.length}!`;
+            progressBar.style.width = `100%`;
+            quizContainer.classList.add("hide");
+            resultContainer.classList.remove("hide");
+            scoreDisplay.innerText = `${score}/${questions.length}`;
+            
+            if (score >= 8) {
+                feedbackText.innerText = "Amazing! You're a genius!";
+            } else if (score >= 5) {
+                feedbackText.innerText = "Good job! You know your stuff.";
+            } else {
+                feedbackText.innerText = "Keep practicing! You can do better.";
+            }
         }
 
-        restartButton.addEventListener("click", startQuiz);
+        restartBtn.onclick = initQuiz;
 
-        // Run the quiz on load
-        startQuiz();
+        initQuiz();
     </script>
 </body>
-  </html>
+    </html>
