@@ -3,30 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Brain Master | Timer Edition</title>
+    <title>Brainiac | The Infinite Quiz</title>
     <style>
-        /* --- MODERN UI & THEME --- */
         :root {
-            --bg-dark: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.8);
-            --accent-primary: #8b5cf6;
-            --accent-secondary: #ec4899;
-            --text-white: #f8fafc;
-            --text-dim: #94a3b8;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
+            --bg: #0f172a;
+            --glass: rgba(30, 41, 59, 0.7);
+            --accent: #00d2ff;
+            --purple: #9d50bb;
+            --pink: #6e48aa;
+            --success: #00b894;
+            --error: #ff7675;
+            --text: #f8fafc;
         }
 
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
 
         body {
             margin: 0;
-            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
-            color: var(--text-white);
+            background: var(--bg);
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: var(--text);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -35,142 +31,107 @@
             overflow: hidden;
         }
 
+        /* Animated Background Blobs */
         .blob {
-            position: fixed;
-            width: 400px;
-            height: 400px;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            filter: blur(100px);
+            position: absolute;
+            width: 500px; height: 500px;
+            background: linear-gradient(var(--purple), var(--pink));
+            filter: blur(120px);
             border-radius: 50%;
             z-index: -1;
-            opacity: 0.15;
-            animation: move 20s infinite alternate;
+            opacity: 0.2;
+            animation: rotate 25s infinite linear;
         }
+        @keyframes rotate { from { transform: rotate(0deg) translate(50px); } to { transform: rotate(360deg) translate(50px); } }
 
-        @keyframes move {
-            from { transform: translate(-10%, -10%); }
-            to { transform: translate(20%, 20%); }
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 600px;
-            z-index: 10;
-        }
+        .container { width: 100%; max-width: 550px; z-index: 10; }
 
         .card {
-            background: var(--card-bg);
+            background: var(--glass);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 28px;
-            padding: 30px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border-radius: 30px;
+            padding: 35px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
             position: relative;
             overflow: hidden;
+            text-align: center;
         }
 
         .hide { display: none; }
 
-        /* --- TIMER BAR --- */
-        .timer-container {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
+        /* TIMER AT TOP */
+        .timer-box {
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 0; left: 0; width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+        }
+        #timer-bar {
+            height: 100%; width: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--purple));
+            transition: width 1s linear;
+        }
+        .timer-text {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            display: block;
+            color: var(--accent);
         }
 
-        #timer-fill {
-            height: 100%;
-            width: 100%;
-            background: var(--success);
-            transition: width 1s linear, background-color 0.3s ease;
-        }
-
-        /* --- CATEGORIES --- */
-        .category-grid {
+        /* CATEGORY GRID */
+        .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
+            margin-top: 25px;
         }
-
-        .category-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 18px;
-            padding: 20px;
-            text-align: center;
+        .choice-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 25px 15px;
+            border-radius: 20px;
             cursor: pointer;
             transition: 0.3s;
         }
-
-        .category-card:hover {
-            background: rgba(255, 255, 255, 0.12);
+        .choice-card:hover {
             transform: translateY(-5px);
-            border-color: var(--accent-primary);
+            background: rgba(255,255,255,0.1);
+            border-color: var(--accent);
+        }
+        .choice-card i { font-size: 2rem; margin-bottom: 10px; display: block; }
+
+        /* QUIZ ELEMENTS */
+        .q-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 0.9rem; color: #94a3b8; }
+        .question { font-size: 1.4rem; font-weight: 600; margin-bottom: 25px; line-height: 1.4; min-height: 80px; }
+        .options { display: grid; gap: 12px; }
+        .opt-btn {
+            background: rgba(255,255,255,0.03);
+            border: 2px solid rgba(255,255,255,0.1);
+            padding: 16px; border-radius: 15px;
+            color: white; text-align: left; cursor: pointer;
+            transition: 0.2s; font-size: 1rem;
+        }
+        .opt-btn:hover { border-color: var(--accent); background: rgba(255,255,255,0.08); }
+        .opt-btn.active { background: var(--accent); border-color: var(--accent); font-weight: bold; }
+
+        .btn-next {
+            width: 100%; margin-top: 30px; padding: 18px;
+            border-radius: 15px; border: none; background: var(--accent);
+            color: var(--bg); font-weight: 800; font-size: 1.1rem; cursor: pointer;
         }
 
-        /* --- QUIZ ELEMENTS --- */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .question-text {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 25px;
-            min-height: 60px;
-        }
-
-        .options-list { display: grid; gap: 12px; }
-
-        .option-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            padding: 16px;
-            border-radius: 14px;
-            color: white;
-            text-align: left;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 1rem;
-        }
-
-        .option-btn:hover { border-color: var(--accent-primary); background: rgba(255,255,255,0.1); }
-        .option-btn.selected { background: var(--accent-primary); border-color: var(--accent-primary); }
-
-        .footer { margin-top: 30px; display: flex; gap: 10px; }
-
-        .btn-main {
-            flex: 1;
-            padding: 16px;
-            border-radius: 14px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 1rem;
-        }
-
-        .btn-next { background: var(--accent-primary); color: white; }
-        .btn-next:hover { opacity: 0.9; transform: scale(1.02); }
-
-        .result-score {
-            font-size: 4rem;
-            font-weight: 800;
-            background: linear-gradient(to right, #a78bfa, #f472b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .score-circle {
+            font-size: 4rem; font-weight: 900; margin: 20px 0;
+            background: linear-gradient(var(--accent), var(--purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
         @media (max-width: 480px) {
-            .category-grid { grid-template-columns: 1fr; }
-            .card { padding: 20px; }
+            .grid { grid-template-columns: 1fr; }
+            .card { padding: 25px; }
         }
     </style>
 </head>
@@ -178,176 +139,163 @@
 
     <div class="blob"></div>
 
-    <div class="app-container">
+    <div class="container">
         <!-- HOME -->
-        <div id="home-screen" class="card">
-            <h1 style="margin-top:0">Brain Master</h1>
-            <p style="color: var(--text-dim); margin-bottom: 25px;">Each question has a 15-second limit. Be fast!</p>
-            <div class="category-grid">
-                <div class="category-card" onclick="startQuiz('science')"><span>🧪</span><br>Science</div>
-                <div class="category-card" onclick="startQuiz('riddles')"><span>🧩</span><br>Riddles</div>
-                <div class="category-card" onclick="startQuiz('math')"><span>🔢</span><br>Math</div>
-                <div class="category-card" onclick="startQuiz('capitals')"><span>🌍</span><br>Capitals</div>
+        <div id="home" class="card">
+            <h1 style="margin-top: 0;">Brainiac</h1>
+            <p style="color: #94a3b8;">Pick a category. New questions every time!</p>
+            <div class="grid">
+                <div class="choice-card" onclick="start('science')"><i>🧪</i>Science</div>
+                <div class="choice-card" onclick="start('riddles')"><i>🧩</i>Riddles</div>
+                <div class="choice-card" onclick="start('math')"><i>🔢</i>Math</div>
+                <div class="choice-card" onclick="start('capitals')"><i>🌍</i>Capitals</div>
             </div>
         </div>
 
         <!-- QUIZ -->
-        <div id="quiz-screen" class="card hide">
-            <div class="timer-container"><div id="timer-fill"></div></div>
-            <div class="header">
-                <span id="q-counter" style="color:var(--text-dim)">1/5</span>
-                <span id="timer-text" style="font-weight:bold; color:var(--warning)">15s</span>
+        <div id="quiz" class="card hide">
+            <div class="timer-box"><div id="timer-bar"></div></div>
+            <div class="q-header">
+                <span id="count">Question 1/5</span>
+                <span class="timer-text" id="time-left">15s</span>
             </div>
-            <div class="question-text" id="question-text">Question Loading...</div>
-            <div class="options-list" id="options-list"></div>
-            <div class="footer">
-                <button id="next-btn" class="btn-main btn-next">Next Question</button>
-            </div>
+            <div class="question" id="q-text">Question Loading...</div>
+            <div class="options" id="opt-container"></div>
+            <button id="next" class="btn-next">Next Question</button>
         </div>
 
-        <!-- RESULTS -->
-        <div id="result-screen" class="card hide" style="text-align: center;">
-            <h2>Quiz Results</h2>
-            <div id="result-score" class="result-score">0/5</div>
-            <p id="result-feedback" style="color:var(--text-dim); margin-bottom: 25px;"></p>
-            <div class="footer">
-                <button onclick="location.reload()" class="btn-main" style="background:rgba(255,255,255,0.1); color:white;">Home</button>
-                <button id="retry-btn" class="btn-main btn-next">Try Again</button>
-            </div>
+        <!-- RESULT -->
+        <div id="result" class="card hide">
+            <h2>Challenge Complete!</h2>
+            <div class="score-circle" id="final-score">0/5</div>
+            <p id="feedback" style="margin-bottom: 30px; color: #94a3b8;"></p>
+            <button onclick="location.reload()" class="btn-next">Play Again</button>
         </div>
     </div>
 
     <script>
-        const quizData = {
+        const database = {
             science: [
-                { q: "What is the only metal that is liquid at room temperature?", a: ["Gold", "Mercury", "Silver", "Iron"], c: "Mercury" },
-                { q: "Which gas do plants absorb from the atmosphere?", a: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"], c: "Carbon Dioxide" },
-                { q: "How many bones are in the adult human body?", a: ["206", "180", "250", "212"], c: "206" },
-                { q: "Hardest natural substance on Earth?", a: ["Steel", "Diamond", "Quartz", "Granite"], c: "Diamond" },
-                { q: "Which planet has the most moons?", a: ["Mars", "Jupiter", "Saturn", "Neptune"], c: "Saturn" }
+                {q: "What is the only metal that is liquid at room temperature?", a: ["Mercury", "Gallium", "Cesium", "Bromine"], c: "Mercury"},
+                {q: "Which planet is known as the 'Morning Star'?", a: ["Mars", "Venus", "Jupiter", "Saturn"], c: "Venus"},
+                {q: "What is the rarest blood type?", a: ["O-Negative", "B-Positive", "AB-Negative", "A-Positive"], c: "AB-Negative"},
+                {q: "How many elements are in the Periodic Table?", a: ["112", "118", "120", "115"], c: "118"},
+                {q: "What is the center of an atom called?", a: ["Proton", "Electron", "Nucleus", "Neutron"], c: "Nucleus"},
+                {q: "Which gas is most abundant in Earth's atmosphere?", a: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Argon"], c: "Nitrogen"},
+                {q: "What is the power house of the cell?", a: ["Nucleus", "Ribosome", "Mitochondria", "Vacuole"], c: "Mitochondria"},
+                {q: "How long does it take for sunlight to reach Earth?", a: ["8 Minutes", "5 Minutes", "12 Minutes", "1 Minute"], c: "8 Minutes"},
+                {q: "What is the largest organ in the human body?", a: ["Liver", "Brain", "Skin", "Heart"], c: "Skin"},
+                {q: "Which scientist proposed the theory of relativity?", a: ["Newton", "Tesla", "Einstein", "Hawking"], c: "Einstein"}
             ],
             riddles: [
-                { q: "The more of this there is, the less you see. What is it?", a: ["Mist", "Darkness", "Light", "Shadow"], c: "Darkness" },
-                { q: "What has keys but can't open locks?", a: ["A Piano", "A Map", "A Safe", "A Locksmith"], c: "A Piano" },
-                { q: "What gets wetter and wetter the more it dries?", a: ["Sea", "Rain", "A Towel", "A Sponge"], c: "A Towel" },
-                { q: "What has a head and a tail but no body?", a: ["A Coin", "A Snake", "A Kite", "A Shadow"], c: "A Coin" },
-                { q: "What belongs to you, but others use it more?", a: ["Money", "Your Name", "Car", "Phone"], c: "Your Name" }
+                {q: "What has many teeth but cannot bite?", a: ["A Saw", "A Comb", "A Zipper", "A Shark"], c: "A Comb"},
+                {q: "The more of this there is, the less you see. What is it?", a: ["Fog", "Darkness", "Light", "Smoke"], c: "Darkness"},
+                {q: "What can travel around the world while staying in a corner?", a: ["A Stamp", "A Plane", "The Moon", "A Shadow"], c: "A Stamp"},
+                {q: "What has a neck but no head?", a: ["A Bottle", "A Shirt", "A Guitar", "A Snake"], c: "A Bottle"},
+                {q: "What has many keys but can't open a single lock?", a: ["A Map", "A Piano", "A Computer", "A Keychain"], c: "A Piano"},
+                {q: "How many months have 28 days?", a: ["1", "6", "12", "Depends on the year"], c: "12"},
+                {q: "What is full of holes but still holds water?", a: ["A Net", "A Sponge", "A Cloud", "A Sieve"], c: "A Sponge"},
+                {q: "What has one eye but can't see?", a: ["A Needle", "A Storm", "A Potato", "A Bat"], c: "A Needle"},
+                {q: "What is easy to get into but hard to get out of?", a: ["A Bed", "Trouble", "A Car", "A Secret"], c: "Trouble"},
+                {q: "What belongs to you but other people use it more?", a: ["Your Money", "Your Name", "Your Phone", "Your Ideas"], c: "Your Name"}
             ],
             math: [
-                { q: "What is 2 + 2 x 2?", a: ["8", "6", "4", "10"], c: "6" },
-                { q: "How many sides does a Heptagon have?", a: ["6", "7", "8", "9"], c: "7" },
-                { q: "Which number is prime?", a: ["9", "15", "2", "21"], c: "2" },
-                { q: "Square root of 144?", a: ["10", "14", "16", "12"], c: "12" },
-                { q: "If a=5 and b=10, what is ab + a?", a: ["55", "50", "60", "15"], c: "55" }
+                {q: "What is 2 + 2 x 2?", a: ["8", "6", "4", "10"], c: "6"},
+                {q: "A bat and ball cost $1.10. The bat costs $1.00 more than the ball. How much is the ball?", a: ["$0.10", "$0.05", "$0.01", "$0.15"], c: "$0.05"},
+                {q: "How many sides does a Nonagon have?", a: ["7", "8", "9", "10"], c: "9"},
+                {q: "If you multiply all numbers on a phone dial, what is the total?", a: ["362,880", "45", "0", "1,000,000"], c: "0"},
+                {q: "What is the square root of 169?", a: ["11", "12", "13", "14"], c: "13"},
+                {q: "What is 15% of 200?", a: ["20", "30", "25", "35"], c: "30"},
+                {q: "How many seconds are in an hour?", a: ["360", "3600", "600", "1200"], c: "3600"},
+                {q: "What comes next: 2, 4, 8, 16, ...?", a: ["24", "32", "20", "64"], c: "32"},
+                {q: "Which is a prime number?", a: ["1", "4", "2", "9"], c: "2"},
+                {q: "What is 100 divided by 0.5?", a: ["50", "200", "100.5", "20"], c: "200"}
             ],
             capitals: [
-                { q: "Capital of Australia?", a: ["Sydney", "Melbourne", "Canberra", "Perth"], c: "Canberra" },
-                { q: "Capital of Brazil?", a: ["Rio", "Brasília", "Sao Paulo", "Salvador"], c: "Brasília" },
-                { q: "Capital of Japan?", a: ["Kyoto", "Osaka", "Hiroshima", "Tokyo"], c: "Tokyo" },
-                { q: "Capital of Canada?", a: ["Toronto", "Vancouver", "Ottawa", "Montreal"], c: "Ottawa" },
-                { q: "Capital of Turkey?", a: ["Istanbul", "Ankara", "Izmir", "Antalya"], c: "Ankara" }
+                {q: "What is the capital of Australia?", a: ["Sydney", "Melbourne", "Canberra", "Perth"], c: "Canberra"},
+                {q: "What is the capital of Canada?", a: ["Toronto", "Ottawa", "Vancouver", "Montreal"], c: "Ottawa"},
+                {q: "What is the capital of Switzerland?", a: ["Zurich", "Geneva", "Bern", "Basel"], c: "Bern"},
+                {q: "What is the capital of Japan?", a: ["Kyoto", "Osaka", "Tokyo", "Nara"], c: "Tokyo"},
+                {q: "What is the capital of Brazil?", a: ["Rio", "Sao Paulo", "Brasilia", "Salvador"], c: "Brasilia"},
+                {q: "What is the capital of Egypt?", a: ["Cairo", "Alexandria", "Giza", "Luxor"], c: "Cairo"},
+                {q: "What is the capital of Turkey?", a: ["Istanbul", "Ankara", "Izmir", "Bursa"], c: "Ankara"},
+                {q: "What is the capital of Thailand?", a: ["Phuket", "Bangkok", "Chiang Mai", "Pattaya"], c: "Bangkok"},
+                {q: "What is the capital of South Africa?", a: ["Cape Town", "Pretoria", "Johannesburg", "Durban"], c: "Pretoria"},
+                {q: "What is the capital of Italy?", a: ["Venice", "Florence", "Naples", "Rome"], c: "Rome"}
             ]
         };
 
-        let currentCategory = '';
-        let currentQuestions = [];
-        let questionIndex = 0;
+        let currentSet = [];
+        let index = 0;
         let score = 0;
-        let selectedAnswer = null;
+        let selected = null;
         let timer;
         let timeLeft = 15;
 
-        function startQuiz(cat) {
-            currentCategory = cat;
-            currentQuestions = [...quizData[cat]].sort(() => Math.random() - 0.5);
-            questionIndex = 0;
+        function start(category) {
+            // Pick 5 random questions from the pool of 10
+            currentSet = [...database[category]].sort(() => Math.random() - 0.5).slice(0, 5);
+            index = 0;
             score = 0;
-            document.getElementById('home-screen').classList.add('hide');
-            document.getElementById('result-screen').classList.add('hide');
-            document.getElementById('quiz-screen').classList.remove('hide');
-            showQuestion();
+            document.getElementById('home').classList.add('hide');
+            document.getElementById('quiz').classList.remove('hide');
+            loadQ();
         }
 
-        function showQuestion() {
+        function loadQ() {
             clearInterval(timer);
             timeLeft = 15;
-            selectedAnswer = null;
-            updateTimerUI();
-
-            const q = currentQuestions[questionIndex];
-            document.getElementById('q-counter').innerText = `${questionIndex + 1}/${currentQuestions.length}`;
-            document.getElementById('question-text').innerText = q.q;
+            selected = null;
+            updateUI();
             
-            const optionsContainer = document.getElementById('options-list');
-            optionsContainer.innerHTML = '';
-
-            [...q.a].sort(() => Math.random() - 0.5).forEach(opt => {
-                const btn = document.createElement('button');
-                btn.classList.add('option-btn');
-                btn.innerText = opt;
-                btn.onclick = () => {
-                    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    selectedAnswer = opt;
+            const data = currentSet[index];
+            document.getElementById('count').innerText = `Question ${index + 1}/5`;
+            document.getElementById('q-text').innerText = data.q;
+            
+            const container = document.getElementById('opt-container');
+            container.innerHTML = '';
+            
+            // Shuffle the options too
+            [...data.a].sort(() => Math.random() - 0.5).forEach(o => {
+                const b = document.createElement('button');
+                b.className = 'opt-btn';
+                b.innerText = o;
+                b.onclick = () => {
+                    document.querySelectorAll('.opt-btn').forEach(btn => btn.classList.remove('active'));
+                    b.classList.add('active');
+                    selected = o;
                 };
-                optionsContainer.appendChild(btn);
+                container.appendChild(b);
             });
 
-            startTimer();
-        }
-
-        function startTimer() {
             timer = setInterval(() => {
                 timeLeft--;
-                updateTimerUI();
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    handleNext(); // Auto-advance on time out
-                }
+                updateUI();
+                if(timeLeft <= 0) { clearInterval(timer); nextQ(); }
             }, 1000);
         }
 
-        function updateTimerUI() {
-            const bar = document.getElementById('timer-fill');
-            const text = document.getElementById('timer-text');
-            const percentage = (timeLeft / 15) * 100;
-            bar.style.width = percentage + "%";
-            text.innerText = timeLeft + "s";
-
-            if (timeLeft > 10) bar.style.backgroundColor = "var(--success)";
-            else if (timeLeft > 5) bar.style.backgroundColor = "var(--warning)";
-            else bar.style.backgroundColor = "var(--danger)";
+        function updateUI() {
+            document.getElementById('timer-bar').style.width = (timeLeft / 15 * 100) + "%";
+            document.getElementById('time-left').innerText = timeLeft + "s";
         }
 
-        function handleNext() {
-            if (selectedAnswer === currentQuestions[questionIndex].c) score++;
-            
-            questionIndex++;
-            if (questionIndex < currentQuestions.length) showQuestion();
-            else showResults();
+        document.getElementById('next').onclick = nextQ;
+
+        function nextQ() {
+            if(selected === currentSet[index].c) score++;
+            index++;
+            if(index < 5) loadQ();
+            else finish();
         }
 
-        document.getElementById('next-btn').onclick = () => {
-            if (!selectedAnswer) {
-                alert("Choose an answer before the time runs out!");
-                return;
-            }
-            handleNext();
-        };
-
-        function showResults() {
+        function finish() {
             clearInterval(timer);
-            document.getElementById('quiz-screen').classList.add('hide');
-            document.getElementById('result-screen').classList.remove('hide');
-            document.getElementById('result-score').innerText = `${score}/${currentQuestions.length}`;
-            
-            const feedback = document.getElementById('result-feedback');
-            if (score === 5) feedback.innerText = "Absolute Legend! 🏆";
-            else if (score >= 3) feedback.innerText = "Great job! Very smart! ✨";
-            else feedback.innerText = "Keep practicing! 🔄";
-
-            document.getElementById('retry-btn').onclick = () => startQuiz(currentCategory);
+            document.getElementById('quiz').classList.add('hide');
+            document.getElementById('result').classList.remove('hide');
+            document.getElementById('final-score').innerText = `${score}/5`;
+            document.getElementById('feedback').innerText = score > 3 ? "Wow! You're a Genius! 🚀" : "Nice try! Can you get a perfect score?";
         }
     </script>
 </body>
-    </html>
+            </html>
