@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun General Knowledge Quiz</title>
+    <style>
+        /* CSS STYLES */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background-color: white;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .quiz-header {
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #777;
+            font-weight: bold;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            color: #2c3e50;
+            line-height: 1.4;
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            background-color: #ffffff;
+            border: 2px solid #dfe6e9;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background-color: #f8f9fa;
+            border-color: #b2bec3;
+        }
+
+        /* State for the selected answer */
+        .btn.selected {
+            background-color: #0984e3;
+            color: white;
+            border-color: #0984e3;
+            transform: scale(1.02);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+        }
+
+        .next-button, .restart-button {
+            background-color: #00b894;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+
+        .next-button:hover, .restart-button:hover {
+            background-color: #00947a;
+        }
+
+        #score-text {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #0984e3;
+            font-weight: bold;
+        }
+
+        /* Responsive adjustment */
+        @media (max-width: 480px) {
+            .quiz-container {
+                padding: 20px;
+            }
+            h2 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Quiz Screen -->
+    <div class="quiz-container" id="quiz">
+        <div class="quiz-header">
+            <span id="progress">Question 1 of 10</span>
+        </div>
+
+        <div id="question-container">
+            <h2 id="question-text">Question loading...</h2>
+            <div id="answer-buttons" class="btn-grid">
+                <!-- Answer buttons will appear here -->
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="next-btn" class="next-button">Next Question</button>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="result-container" class="quiz-container hide">
+        <h2>Quiz Completed! 🎉</h2>
+        <p id="score-text">You scored 0 out of 10.</p>
+        <button id="restart-btn" class="restart-button">Play Again</button>
+    </div>
+
+    <script>
+        // JAVASCRIPT LOGIC
+        const questions = [
+            {
+                question: "Which planet is known as the 'Red Planet'?",
+                answers: ["Venus", "Mars", "Jupiter", "Saturn"],
+                correct: "Mars"
+            },
+            {
+                question: "What is the capital of France?",
+                answers: ["London", "Berlin", "Madrid", "Paris"],
+                correct: "Paris"
+            },
+            {
+                question: "Which animal is known as the 'King of the Jungle'?",
+                answers: ["Tiger", "Elephant", "Lion", "Giraffe"],
+                correct: "Lion"
+            },
+            {
+                question: "What is the largest mammal in the world?",
+                answers: ["African Elephant", "Blue Whale", "Great White Shark", "Giraffe"],
+                correct: "Blue Whale"
+            },
+            {
+                question: "How many continents are there on Earth?",
+                answers: ["5", "6", "7", "8"],
+                correct: "7"
+            },
+            {
+                question: "Which fruit is said to keep the doctor away if eaten once a day?",
+                answers: ["Banana", "Apple", "Orange", "Strawberry"],
+                correct: "Apple"
+            },
+            {
+                question: "What color are emeralds?",
+                answers: ["Blue", "Red", "Yellow", "Green"],
+                correct: "Green"
+            },
+            {
+                question: "Which is the tallest mountain in the world?",
+                answers: ["K2", "Mount Everest", "Kilimanjaro", "Mount Fuji"],
+                correct: "Mount Everest"
+            },
+            {
+                question: "What is the name of the gas we breathe to survive?",
+                answers: ["Nitrogen", "Carbon Dioxide", "Oxygen", "Helium"],
+                correct: "Oxygen"
+            },
+            {
+                question: "Who painted the Mona Lisa?",
+                answers: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Claude Monet"],
+                correct: "Leonardo da Vinci"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedAnswer = null;
+
+        const questionText = document.getElementById("question-text");
+        const answerButtonsElement = document.getElementById("answer-buttons");
+        const nextButton = document.getElementById("next-btn");
+        const progressText = document.getElementById("progress");
+        const quizScreen = document.getElementById("quiz");
+        const resultScreen = document.getElementById("result-container");
+        const scoreText = document.getElementById("score-text");
+        const restartButton = document.getElementById("restart-btn");
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            resultScreen.classList.add("hide");
+            quizScreen.classList.remove("hide");
+            showQuestion();
+        }
+
+        function showQuestion() {
+            selectedAnswer = null; 
+            const currentQuestion = questions[currentQuestionIndex];
+            
+            progressText.innerText = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+            questionText.innerText = currentQuestion.question;
+            answerButtonsElement.innerHTML = "";
+
+            currentQuestion.answers.forEach(answer => {
+                const button = document.createElement("button");
+                button.innerText = answer;
+                button.classList.add("btn");
+                button.addEventListener("click", () => selectAnswer(button, answer));
+                answerButtonsElement.appendChild(button);
+            });
+        }
+
+        function selectAnswer(button, answer) {
+            // Remove selection from all buttons
+            const buttons = document.querySelectorAll(".btn");
+            buttons.forEach(btn => btn.classList.remove("selected"));
+            
+            // Add selection to clicked button
+            button.classList.add("selected");
+            selectedAnswer = answer;
+        }
+
+        nextButton.addEventListener("click", () => {
+            if (selectedAnswer === null) {
+                alert("Please select an answer first!");
+                return;
+            }
+
+            if (selectedAnswer === questions[currentQuestionIndex].correct) {
+                score++;
+            }
+
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        });
+
+        function showResults() {
+            quizScreen.classList.add("hide");
+            resultScreen.classList.remove("hide");
+            scoreText.innerText = `You scored ${score} out of ${questions.length}!`;
+        }
+
+        restartButton.addEventListener("click", startQuiz);
+
+        // Run the quiz on load
+        startQuiz();
+    </script>
+</body>
+  </html>
